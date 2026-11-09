@@ -13,6 +13,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.das.bambuwatch.MainActivity
+import com.das.bambuwatch.R
 import com.das.bambuwatch.shared.ConnectionState
 import com.das.bambuwatch.shared.GcodeState
 import com.das.bambuwatch.shared.PrintEvent
@@ -60,7 +61,8 @@ class Notifier(private val context: Context) {
 
     fun ongoing(state: PrinterState): Notification {
         val builder = NotificationCompat.Builder(context, CH_MONITOR)
-            .setSmallIcon(android.R.drawable.stat_notify_sync_noanim)
+            .setSmallIcon(R.drawable.ic_printer)
+            .setColor(if (state.isPrinting) COLOR_PRINTING else COLOR_IDLE)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
             .setLocalOnly(true)
@@ -108,7 +110,14 @@ class Notifier(private val context: Context) {
         post(
             id,
             NotificationCompat.Builder(context, channel)
-                .setSmallIcon(if (channel == CH_FINISHED) android.R.drawable.stat_sys_download_done else android.R.drawable.stat_notify_error)
+                .setSmallIcon(R.drawable.ic_printer)
+                .setColor(
+                    when (channel) {
+                        CH_FINISHED -> COLOR_IDLE
+                        CH_PROGRESS -> COLOR_PRINTING
+                        else -> COLOR_ERROR
+                    },
+                )
                 .setContentTitle(title)
                 .setContentText(text)
                 .setStyle(NotificationCompat.BigTextStyle().bigText(text))
@@ -123,7 +132,8 @@ class Notifier(private val context: Context) {
     fun connectionLost(minutes: Long) = post(
         ID_CONNECTION,
         NotificationCompat.Builder(context, CH_CONNECTION)
-            .setSmallIcon(android.R.drawable.stat_notify_error)
+            .setSmallIcon(R.drawable.ic_printer)
+            .setColor(COLOR_ERROR)
             .setContentTitle("Lost connection to printer")
             .setContentText("No updates for $minutes min during a print.")
             .setAutoCancel(true)
@@ -165,6 +175,11 @@ class Notifier(private val context: Context) {
 
     companion object {
         const val ID_ONGOING = 1
+
+        // Same palette as the watch tile: green = idle/done, yellow = printing, red = problem.
+        private const val COLOR_IDLE = 0xFF66BB6A.toInt()
+        private const val COLOR_PRINTING = 0xFFFFD600.toInt()
+        private const val COLOR_ERROR = 0xFFEF5350.toInt()
         private const val ID_STATE_ALERT = 2
         private const val ID_ERROR_ALERT = 3
         private const val ID_PROGRESS_ALERT = 4
