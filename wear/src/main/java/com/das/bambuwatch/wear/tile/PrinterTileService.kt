@@ -59,7 +59,18 @@ class PrinterTileService : TileService() {
 
         private const val WHITE = 0xFFFFFFFF.toInt()
         private const val GREY = 0xFFBDBDBD.toInt()
-        private const val TRACK = 0xFF2A2A2A.toInt()
+
+        /**
+         * The ring's background track: the state color at [TRACK_BRIGHTNESS], so the whole ring
+         * reads green/yellow/red even at 0%, with the bright arc showing progress on top.
+         */
+        internal fun trackColor(tone: TileTone): Int {
+            val c = toneColor(tone)
+            fun dim(shift: Int) = (((c shr shift) and 0xFF) * TRACK_BRIGHTNESS).toInt() shl shift
+            return (0xFF shl 24) or dim(16) or dim(8) or dim(0)
+        }
+
+        private const val TRACK_BRIGHTNESS = 0.35f
 
         internal fun toneColor(tone: TileTone): Int = when (tone) {
             TileTone.IDLE -> 0xFF66BB6A.toInt() // green
@@ -85,7 +96,7 @@ class PrinterTileService : TileService() {
                     .setEdgeContent(
                         CircularProgressIndicator.Builder()
                             .setProgress(m.progress)
-                            .setCircularProgressIndicatorColors(ProgressIndicatorColors(accent, TRACK))
+                            .setCircularProgressIndicatorColors(ProgressIndicatorColors(accent, trackColor(m.tone)))
                             .build(),
                     )
                     .setPrimaryLabelTextContent(label)

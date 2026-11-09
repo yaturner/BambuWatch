@@ -72,3 +72,11 @@ class TileModelTest {
         assertEquals("Clear the plate", model(running.copy(gcodeState = "FINISH", hmsCount = 1)).secondary)
     }
 }
+
+class TileColorsTest {
+    @Test
+    fun `track is a dim shade of the state color`() {
+        // yellow 0xFFFFD600 at 35%: 255*0.35=89 (0x59), 214*0.35=74 (0x4A), 0 -> 0xFF594A00, fully opaque
+        assertEquals(0xFF594A00.toInt(), PrinterTileService.trackColor(TileTone.PRINTING))
+    }
+}

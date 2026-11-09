@@ -51,10 +51,13 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.play.services.wearable)
+    implementation(libs.androidx.fragment)
     implementation(libs.androidx.wear.tiles)
     implementation(libs.androidx.wear.protolayout)
     implementation(libs.androidx.wear.protolayout.material)
     implementation(libs.androidx.concurrent.futures)
+    implementation(libs.androidx.wear.complications.data.source.ktx)
+    implementation(libs.androidx.wear.ongoing)
 
     testImplementation(libs.junit)
 

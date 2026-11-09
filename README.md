@@ -23,7 +23,9 @@ Printer ◄─MQTT/TLS :8883─► Phone (:mobile) ─Data Layer─► Watch (:w
 - [x] 3. Foreground service + finish/error notifications
 - [x] 4. Data Layer publish + `:wear` module (phone pacing by `WatchSyncPolicy`: important changes immediately, progress every 30 s, heartbeat every 5 min)
 - [x] 5. Tile (`PrinterTileService`: progress ring green = idle/done, yellow = printing, red = error; redrawn on every update from the phone, tap opens the watch app)
-- [ ] 6. Complication + Ongoing Activity
+- [x] 6. Complication + Ongoing Activity
+  - `PrinterComplicationService`: RANGED_VALUE (ring + percent, green/yellow/red color ramp on faces that support it), SHORT_TEXT ("67%" / "1h12m"), LONG_TEXT. Add it from the watch face's Customize screen.
+  - `PrintOngoingActivity`: printer icon on the watch face while a print runs ("67% · 1h12m"), removed when it ends.
 - [ ] 7. Watch → printer commands (needs LAN-only + Developer Mode on current firmware)
 
 ## Build
@@ -60,6 +62,14 @@ Settings (IP, serial, access code) are kept in three places, in this order of pr
 2. **App storage** (access code encrypted with the Android Keystore): used when file access isn't granted.
 3. **`printer.properties`** in the repo root (gitignored, see `printer.properties.example`): fills in
    **debug** builds when neither of the above has settings. Release builds never include it.
+
+### Testing watch surfaces without a print (debug builds only)
+
+```
+adb -s <watch> shell am broadcast -n com.das.bambuwatch/com.das.bambuwatch.wear.DebugStateReceiver \
+    --es state RUNNING --ei percent 42 --ei remaining 75 [--el error 5] [--ei hms 1] [--ez connected false]
+```
+The phone's next update (at most 5 min) replaces the fake state.
 
 ## Notes
 

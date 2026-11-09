@@ -64,7 +64,10 @@ fun WearStatusScreen(latest: StateFlow<Received?>) {
             }
             val s = r.state
             ScalingLazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
-                item { ProgressHeader(s, Color(PrinterTileService.toneColor(TileModel.from(r, now).tone))) }
+                item {
+                    val tone = TileModel.from(r, now).tone
+                    ProgressHeader(s, Color(PrinterTileService.toneColor(tone)), Color(PrinterTileService.trackColor(tone)))
+                }
                 item {
                     Text(
                         prettyJobName(s.jobName) ?: "No job",
@@ -93,12 +96,13 @@ fun WearStatusScreen(latest: StateFlow<Received?>) {
 }
 
 @Composable
-private fun ProgressHeader(s: WatchState, color: Color) {
+private fun ProgressHeader(s: WatchState, color: Color, track: Color) {
     Box(Modifier.size(84.dp), contentAlignment = Alignment.Center) {
         CircularProgressIndicator(
             progress = if (s.gcodeState in setOf("RUNNING", "PAUSE", "PREPARE", "FAILED")) s.percent / 100f else 1f,
             modifier = Modifier.fillMaxSize(),
             indicatorColor = color,
+            trackColor = track,
             strokeWidth = 6.dp,
         )
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {

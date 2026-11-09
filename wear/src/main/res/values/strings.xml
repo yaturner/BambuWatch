@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="tile_label">Bambu print</string>
+    <string name="complication_label">Bambu print</string>
     <string name="tile_description">Print progress, time left and alerts from your Bambu printer</string>
 </resources>
