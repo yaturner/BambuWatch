@@ -86,3 +86,7 @@ data class PrinterState(
         const val EXTERNAL_SPOOL = 254
     }
 }
+
+/** Bambu job names use underscores for spaces ("Can_Organizer_-_No_Supports"); show them readably. */
+fun prettyJobName(raw: String?): String? =
+    raw?.replace('_', ' ')?.replace(Regex("\\s+"), " ")?.trim()?.ifBlank { null }

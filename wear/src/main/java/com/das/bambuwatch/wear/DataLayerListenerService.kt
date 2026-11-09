@@ -1,6 +1,7 @@
 package com.das.bambuwatch.wear
 
 import com.das.bambuwatch.shared.DataLayerPaths
+import com.das.bambuwatch.wear.tile.PrinterTileService
 import com.google.android.gms.wearable.DataEvent
 import com.google.android.gms.wearable.DataEventBuffer
 import com.google.android.gms.wearable.DataMapItem
@@ -17,6 +18,6 @@ class DataLayerListenerService : WearableListenerService() {
                 cache.update(bytes, map.getLong(DataLayerPaths.SENT_AT_KEY))
             }
         }
-        // Milestone 5: request a tile update here.
+        PrinterTileService.requestUpdate(this)
     }
 }

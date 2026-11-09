@@ -31,10 +31,12 @@ import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import com.das.bambuwatch.shared.WatchState
 import com.das.bambuwatch.shared.formatErrorCode
+import com.das.bambuwatch.shared.prettyJobName
+import com.das.bambuwatch.wear.tile.PrinterTileService
+import com.das.bambuwatch.wear.tile.TileModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
 
-private val ACCENT = Color(0xFF4CAF50)
 private val WARN = Color(0xFFFFB300)
 private val ERROR = Color(0xFFEF5350)
 
@@ -62,10 +64,10 @@ fun WearStatusScreen(latest: StateFlow<Received?>) {
             }
             val s = r.state
             ScalingLazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
-                item { ProgressHeader(s) }
+                item { ProgressHeader(s, Color(PrinterTileService.toneColor(TileModel.from(r, now).tone))) }
                 item {
                     Text(
-                        s.jobName.ifBlank { "No job" },
+                        prettyJobName(s.jobName) ?: "No job",
                         maxLines = 2, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -91,15 +93,10 @@ fun WearStatusScreen(latest: StateFlow<Received?>) {
 }
 
 @Composable
-private fun ProgressHeader(s: WatchState) {
-    val color = when (s.gcodeState) {
-        "FAILED" -> ERROR
-        "PAUSE" -> WARN
-        else -> ACCENT
-    }
+private fun ProgressHeader(s: WatchState, color: Color) {
     Box(Modifier.size(84.dp), contentAlignment = Alignment.Center) {
         CircularProgressIndicator(
-            progress = s.percent / 100f,
+            progress = if (s.gcodeState in setOf("RUNNING", "PAUSE", "PREPARE", "FAILED")) s.percent / 100f else 1f,
             modifier = Modifier.fillMaxSize(),
             indicatorColor = color,
             strokeWidth = 6.dp,

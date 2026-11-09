@@ -18,6 +18,7 @@ import com.das.bambuwatch.shared.GcodeState
 import com.das.bambuwatch.shared.PrintEvent
 import com.das.bambuwatch.shared.PrinterState
 import com.das.bambuwatch.shared.describe
+import com.das.bambuwatch.shared.prettyJobName
 
 /**
  * All notification channels and notifications.
@@ -68,7 +69,7 @@ class Notifier(private val context: Context) {
             .setContentIntent(openAppIntent())
             .addAction(0, "Stop monitoring", stopIntent())
 
-        val job = state.jobName ?: "Print"
+        val job = prettyJobName(state.jobName) ?: "Print"
         val pct = state.percent ?: 0
         when {
             state.connection != ConnectionState.CONNECTED -> builder

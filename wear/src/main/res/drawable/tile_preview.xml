@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tile picker preview: a progress ring. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="192dp"
+    android:height="192dp"
+    android:viewportWidth="192"
+    android:viewportHeight="192">
+    <path
+        android:fillColor="#000000"
+        android:pathData="M96,0a96,96 0,1 1,0 192a96,96 0,1 1,0 -192z" />
+    <path
+        android:pathData="M96,8a88,88 0,1 1,-0.01 0"
+        android:strokeWidth="8"
+        android:strokeColor="#2A2A2A" />
+    <path
+        android:pathData="M96,8A88,88 0,1 1,8.6 109"
+        android:strokeLineCap="round"
+        android:strokeWidth="8"
+        android:strokeColor="#4FC3F7" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M66,84h60v8h-60z M76,100h40v6h-40z" />
+</vector>

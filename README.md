@@ -22,7 +22,7 @@ Printer ◄─MQTT/TLS :8883─► Phone (:mobile) ─Data Layer─► Watch (:w
 - [x] 2. Phone MQTT client + setup screen, live status
 - [x] 3. Foreground service + finish/error notifications
 - [x] 4. Data Layer publish + `:wear` module (phone pacing by `WatchSyncPolicy`: important changes immediately, progress every 30 s, heartbeat every 5 min)
-- [ ] 5. Tile
+- [x] 5. Tile (`PrinterTileService`: progress ring green = idle/done, yellow = printing, red = error; redrawn on every update from the phone, tap opens the watch app)
 - [ ] 6. Complication + Ongoing Activity
 - [ ] 7. Watch → printer commands (needs LAN-only + Developer Mode on current firmware)
 

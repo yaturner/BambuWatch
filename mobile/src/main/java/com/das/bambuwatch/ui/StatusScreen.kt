@@ -43,6 +43,7 @@ import com.das.bambuwatch.shared.AmsTray
 import com.das.bambuwatch.shared.ConnectionState
 import com.das.bambuwatch.shared.GcodeState
 import com.das.bambuwatch.shared.PrinterState
+import com.das.bambuwatch.shared.prettyJobName
 import com.das.bambuwatch.watch.WatchLinkStatus
 
 @Composable
@@ -74,7 +75,7 @@ fun StatusScreen(
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(stateLabel(state.gcodeState), style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.primary)
-                Text(state.jobName ?: "No job", style = MaterialTheme.typography.titleLarge)
+                Text(prettyJobName(state.jobName) ?: "No job", style = MaterialTheme.typography.titleLarge)
                 if (state.isPrinting || state.gcodeState == GcodeState.FINISH) {
                     val pct = state.percent ?: 0
                     LinearProgressIndicator(progress = { pct / 100f }, modifier = Modifier.fillMaxWidth())

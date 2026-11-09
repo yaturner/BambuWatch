@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.lifecycle.lifecycleScope
 import com.das.bambuwatch.shared.DataLayerPaths
+import com.das.bambuwatch.wear.tile.PrinterTileService
 import com.google.android.gms.wearable.DataMapItem
 import com.google.android.gms.wearable.PutDataRequest
 import com.google.android.gms.wearable.Wearable
@@ -34,6 +35,7 @@ class MainActivity : ComponentActivity() {
             } finally {
                 items.release()
             }
+            PrinterTileService.requestUpdate(this)
         } catch (e: Exception) {
             Log.w("MainActivity", "Couldn't read existing data items", e)
         }

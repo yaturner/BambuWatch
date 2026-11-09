@@ -63,7 +63,7 @@ data class EventText(val title: String, val text: String)
 fun formatErrorCode(code: Long): String = "0x" + code.toString(16).uppercase().padStart(8, '0')
 
 fun PrintEvent.describe(): EventText {
-    fun name(job: String?) = job ?: "The print"
+    fun name(job: String?) = prettyJobName(job) ?: "The print"
     fun errorSuffix(code: Long?) = code?.let { " (error ${formatErrorCode(it)})" }.orEmpty()
     return when (this) {
         is PrintEvent.Finished -> EventText("Print finished", "${name(jobName)} is done. Clear the plate.")

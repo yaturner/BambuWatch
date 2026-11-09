@@ -114,6 +114,14 @@ class ReportParserTest {
     }
 
     @Test
+    fun `job names are prettified for display`() {
+        assertEquals("Can Organizer - No Supports Needed", prettyJobName("Can_Organizer_-_No_Supports_Needed"))
+        assertEquals("Benchy", prettyJobName("  Benchy "))
+        assertNull(prettyJobName("__"))
+        assertNull(prettyJobName(null))
+    }
+
+    @Test
     fun `color normalization`() {
         assertEquals("#0A2989", ReportParser.normalizeColor("0a2989ff"))
         assertEquals("#0A2989", ReportParser.normalizeColor("#0A2989"))
