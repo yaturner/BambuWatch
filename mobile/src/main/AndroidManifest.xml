@@ -9,19 +9,14 @@
     <!-- Required by Android 14+ for a connectedDevice foreground service (normal permission, no prompt). -->
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
-    <!-- Documents/BambuWatch/printer.json: All files access on Android 11+, legacy storage on 8-10. -->
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="29" />
+    <!-- Storage and direct battery-optimization permissions are github-flavor only
+         (src/github/AndroidManifest.xml); Google Play restricts them. -->
 
     <application
         android:name=".BambuWatchApp"
         android:allowBackup="false"
-        android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="Bambu Watch"
+        android:label="printWatcher"
         android:roundIcon="@mipmap/ic_launcher"
         android:theme="@android:style/Theme.Material.NoActionBar">
         <activity

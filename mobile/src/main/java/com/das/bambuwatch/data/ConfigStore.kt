@@ -35,6 +35,8 @@ private val Context.dataStore by preferencesDataStore(name = "printer_config")
 class ConfigStore(
     private val context: Context,
     private val defaults: PrinterConfig? = null,
+    /** False in the Play build: no printer.json (it needs All files access, which Play restricts). */
+    private val fileEnabled: Boolean = true,
 ) {
     private val cipher = KeystoreCipher()
     private val restoreLock = Mutex()
@@ -59,6 +61,7 @@ class ConfigStore(
     suspend fun save(config: PrinterConfig) {
         val normalized = config.normalized()
         writeStored(normalized)
+        if (!fileEnabled) return
         val written = withContext(Dispatchers.IO) { configFile.write(normalized) }
         _fileStatus.value = when {
             written -> ConfigFileStatus.InSync
@@ -73,7 +76,8 @@ class ConfigStore(
      */
     suspend fun restore() = restoreLock.withLock {
         val stored = decodeStored(context.dataStore.data.first())
-        when (val fromFile = withContext(Dispatchers.IO) { configFile.read() }) {
+        val read = if (fileEnabled) withContext(Dispatchers.IO) { configFile.read() } else ConfigFileRead.NoAccess
+        when (val fromFile = read) {
             is ConfigFileRead.Ok -> {
                 if (fromFile.config != stored) {
                     Log.i(TAG, "Restoring printer settings from ${PrinterConfigFile.DISPLAY_PATH}")

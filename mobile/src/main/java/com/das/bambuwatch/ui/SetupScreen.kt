@@ -28,6 +28,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import com.das.bambuwatch.BuildConfig
 import com.das.bambuwatch.data.ConfigFileStatus
 import com.das.bambuwatch.shared.PrinterConfig
 
@@ -96,6 +97,6 @@ fun SetupScreen(
                 Text("Save & connect")
             }
         }
-        ConfigFileCard(fileStatus, onFileAccessResult)
+        if (BuildConfig.SETTINGS_FILE_ENABLED) ConfigFileCard(fileStatus, onFileAccessResult)
     }
 }

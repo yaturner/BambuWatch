@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- github (sideload) flavor only. These are restricted on Google Play, so the play flavor omits them. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Documents/BambuWatch/printer.json: All files access on Android 11+, legacy storage on 8-10. -->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29" />
+    <!-- Direct "allow unrestricted battery" prompt. -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <application android:requestLegacyExternalStorage="true" />
+</manifest>

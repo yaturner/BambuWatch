@@ -38,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import com.das.bambuwatch.BuildConfig
 import com.das.bambuwatch.data.ConfigFileStatus
 import com.das.bambuwatch.shared.AmsTray
 import com.das.bambuwatch.shared.ConnectionState
@@ -129,7 +130,7 @@ fun StatusScreen(
             }
         }
 
-        ConfigFileCard(fileStatus, onFileAccessResult)
+        if (BuildConfig.SETTINGS_FILE_ENABLED) ConfigFileCard(fileStatus, onFileAccessResult)
 
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             OutlinedButton(onClick = onEdit) { Text("Printer settings") }
@@ -167,7 +168,7 @@ private fun WatchCard(link: WatchLinkStatus, monitoring: Boolean) {
         !link.apiAvailable -> "Watch" to "Wear OS isn't available on this phone."
         watch == null -> "No watch connected" to "Pair your watch in Galaxy Wearable to see the print on your wrist."
         link.appInstalledOn.isEmpty() -> "Watch: $watch" to
-            "Install Bambu Watch on the watch. Notifications still reach the watch without it."
+            "Install printWatcher on the watch. Notifications still reach the watch without it."
         !monitoring -> "Watch: $watch" to "Turn on background monitoring to send updates to the watch."
         link.lastSentAt == 0L -> "Watch: $watch" to "Waiting for the first printer update to send."
         else -> "Watch: $watch" to "Watch app installed. Last update sent ${formatAgo(link.lastSentAt)}."
@@ -227,11 +228,23 @@ private fun BatteryOptimizationCard() {
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            OutlinedButton(onClick = {
-                context.startActivity(
-                    Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:${context.packageName}")),
+            if (BuildConfig.DIRECT_BATTERY_REQUEST) {
+                OutlinedButton(onClick = {
+                    context.startActivity(
+                        Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:${context.packageName}")),
+                    )
+                }) { Text("Allow unrestricted") }
+            } else {
+                // Play build: the direct prompt needs a restricted permission, so open the system list.
+                Text(
+                    "In the list, choose \"All apps\", find printWatcher and set it to \"Don't optimize\" (or \"Unrestricted\").",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-            }) { Text("Allow unrestricted") }
+                OutlinedButton(onClick = {
+                    context.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+                }) { Text("Open battery settings") }
+            }
         }
     }
 }

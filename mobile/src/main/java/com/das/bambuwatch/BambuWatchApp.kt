@@ -24,6 +24,7 @@ class BambuWatchApp : Application() {
                 BuildConfig.DEFAULT_PRINTER_SERIAL,
                 BuildConfig.DEFAULT_PRINTER_ACCESS_CODE,
             ),
+            fileEnabled = BuildConfig.SETTINGS_FILE_ENABLED,
         )
     }
     val printerRepository by lazy { PrinterRepository(appScope) }

@@ -9,7 +9,7 @@
         android:name=".WearApp"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
-        android:label="Bambu Watch"
+        android:label="printWatcher"
         android:roundIcon="@mipmap/ic_launcher"
         android:theme="@android:style/Theme.DeviceDefault">
 

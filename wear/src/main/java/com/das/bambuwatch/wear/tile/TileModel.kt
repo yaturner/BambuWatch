@@ -27,7 +27,7 @@ data class TileModel(
 
         fun from(received: Received?, now: Long): TileModel {
             if (received == null) {
-                return TileModel("Bambu", "No data", "Open Bambu Watch on your phone", null, null, TileTone.IDLE)
+                return TileModel("printWatcher", "No data", "Open printWatcher on your phone", null, null, TileTone.IDLE)
             }
             val s = received.state
             val stale = received.sentAt > 0 && now - received.sentAt > STALE_AFTER_MS

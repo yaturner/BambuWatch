@@ -13,6 +13,14 @@ val printerProps = Properties().apply {
 fun printerProp(key: String): String =
     "\"" + printerProps.getProperty(key, "").trim().replace("\\", "\\\\").replace("\"", "\\\"") + "\""
 
+// Release signing with the Play upload key, read from the gitignored keystore.properties
+// (see README). Without that file, release builds are left unsigned.
+val keystoreProps = Properties().apply {
+    rootProject.file("keystore.properties").takeIf { it.isFile }?.inputStream()?.use { load(it) }
+}
+val appVersionCode = (property("appVersionCode") as String).toInt()
+val appVersionName = property("appVersionName") as String
+
 android {
     namespace = "com.das.bambuwatch"
     compileSdk = 36
@@ -22,8 +30,36 @@ android {
         applicationId = "com.das.bambuwatch"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = appVersionCode * 10
+        versionName = appVersionName
+    }
+
+    signingConfigs {
+        if (keystoreProps.getProperty("storeFile") != null) {
+            create("release") {
+                storeFile = file(keystoreProps.getProperty("storeFile"))
+                storePassword = keystoreProps.getProperty("storePassword")
+                keyAlias = keystoreProps.getProperty("keyAlias")
+                keyPassword = keystoreProps.getProperty("keyPassword")
+            }
+        }
+    }
+
+    // play:   Google Play build. No "All files access" (Play policy), so no printer.json settings
+    //         file; battery optimization opens the system list instead of the direct prompt.
+    // github: sideload build. Keeps Documents/BambuWatch/printer.json and the direct prompt.
+    flavorDimensions += "distribution"
+    productFlavors {
+        create("play") {
+            dimension = "distribution"
+            buildConfigField("boolean", "SETTINGS_FILE_ENABLED", "false")
+            buildConfigField("boolean", "DIRECT_BATTERY_REQUEST", "false")
+        }
+        create("github") {
+            dimension = "distribution"
+            buildConfigField("boolean", "SETTINGS_FILE_ENABLED", "true")
+            buildConfigField("boolean", "DIRECT_BATTERY_REQUEST", "true")
+        }
     }
 
     buildTypes {
@@ -34,6 +70,7 @@ android {
         }
         release {
             isMinifyEnabled = false
+            signingConfigs.findByName("release")?.let { signingConfig = it }
             // Never bake credentials into a release build.
             buildConfigField("String", "DEFAULT_PRINTER_IP", "\"\"")
             buildConfigField("String", "DEFAULT_PRINTER_SERIAL", "\"\"")

@@ -25,7 +25,7 @@ data class ComplicationContent(
         fun from(received: Received?, now: Long): ComplicationContent {
             val m = TileModel.from(received, now)
             val s = received?.state
-                ?: return ComplicationContent(0f, "--", null, "Bambu: no data from phone", m.tone, hasData = false)
+                ?: return ComplicationContent(0f, "--", null, "printWatcher: no data from phone", m.tone, hasData = false)
 
             val printing = s.gcodeState in setOf("RUNNING", "PAUSE", "PREPARE")
             val pct = s.percent.coerceIn(0, 100)

@@ -1,8 +1,18 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 }
+
+// Release signing with the Play upload key, read from the gitignored keystore.properties
+// (see README). Without that file, release builds are left unsigned.
+val keystoreProps = Properties().apply {
+    rootProject.file("keystore.properties").takeIf { it.isFile }?.inputStream()?.use { load(it) }
+}
+val appVersionCode = (property("appVersionCode") as String).toInt()
+val appVersionName = property("appVersionName") as String
 
 android {
     namespace = "com.das.bambuwatch.wear"
@@ -13,14 +23,27 @@ android {
         // or the Wearable Data Layer won't connect them.
         applicationId = "com.das.bambuwatch"
         minSdk = 30 // Wear OS 3 (Galaxy Watch4 and later)
-        targetSdk = 34
-        versionCode = 1
-        versionName = "0.1.0"
+        targetSdk = 36
+        versionCode = appVersionCode * 10 + 1
+        versionName = appVersionName
     }
+
+    signingConfigs {
+        if (keystoreProps.getProperty("storeFile") != null) {
+            create("release") {
+                storeFile = file(keystoreProps.getProperty("storeFile"))
+                storePassword = keystoreProps.getProperty("storePassword")
+                keyAlias = keystoreProps.getProperty("keyAlias")
+                keyPassword = keystoreProps.getProperty("keyPassword")
+            }
+        }
+    }
+
 
     buildTypes {
         release {
             isMinifyEnabled = false
+            signingConfigs.findByName("release")?.let { signingConfig = it }
         }
     }
 

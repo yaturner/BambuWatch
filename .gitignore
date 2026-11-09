@@ -11,3 +11,8 @@ build/
 
 # Local printer credentials for debug builds
 /printer.properties
+
+# Release signing (upload key) - never commit
+/keystore.properties
+*.jks
+*.keystore

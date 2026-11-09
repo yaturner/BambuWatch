@@ -1,6 +1,6 @@
-# BambuWatch
+# printWatcher for Bambu Lab
 
-**Your Bambu Lab print, on your wrist.** BambuWatch is an Android phone app plus a Wear OS
+**Your Bambu Lab print, on your wrist.** printWatcher (this repo: BambuWatch) is an Android phone app plus a Wear OS
 watch app that shows a Bambu Lab printer's progress on a Galaxy Watch (or any Wear OS watch)
 and alerts you when a print finishes or needs attention. Everything stays on your local
 network: no Bambu cloud account, no third-party servers.
@@ -46,12 +46,15 @@ Watch controls (pause/resume) may come later as a separate, opt-in feature.
 
 ## Getting started
 
-There's no store release yet; build and install with Android Studio or the command line
-(see [Build](#build)), then:
+There's no store release yet (a Google Play release is being prepared); build and install with
+Android Studio or the command line (see [Build](#build)), then:
 
-1. Open **Bambu Watch** on the phone and enter the printer's IP address, serial number and access code.
-2. Allow notifications, and tap **Allow unrestricted** on the battery card so alerts aren't delayed.
-3. Install the watch app, then add the **Bambu print** tile and complication from the watch.
+1. Open **printWatcher** on the phone and enter the printer's IP address, serial number and access code.
+2. Allow notifications, and turn off battery optimization for the app (the battery card on the
+   status screen) so alerts aren't delayed.
+3. Install the watch app, then add the **printWatcher** tile and complication from the watch.
+
+[Privacy policy](https://projects.darcangel.com/bambuwatch/privacy/)
 
 ```
 Printer ◄─MQTT/TLS :8883─► Phone app ─Wear OS Data Layer─► Watch app
@@ -85,10 +88,36 @@ Printer ◄─MQTT/TLS :8883─► Phone app ─Wear OS Data Layer─► Watch a
 
 ## Build
 
+The phone app has two flavors (the watch app has none):
+
+| Flavor | For | Differences |
+|---|---|---|
+| `play` | Google Play | No `printer.json` settings file and no direct battery prompt (both need permissions Play restricts). |
+| `github` | Sideloading / development | Keeps `Documents/BambuWatch/printer.json` and the direct "Allow unrestricted" battery prompt. |
+
 ```
-./gradlew :shared:test :mobile:assembleDebug
-adb install -r mobile/build/outputs/apk/debug/mobile-debug.apk
+./gradlew :shared:test :wear:testDebugUnitTest            # unit tests
+./gradlew :mobile:assembleGithubDebug :wear:assembleDebug  # debug builds
+adb install -r mobile/build/outputs/apk/github/debug/mobile-github-debug.apk
 ```
+
+Release builds (`:mobile:bundlePlayRelease`, `:wear:bundleRelease`, `:mobile:assembleGithubRelease`,
+`:wear:assembleRelease`) are signed with the Play upload key when a gitignored `keystore.properties`
+exists in the repo root:
+
+```
+storeFile=/path/to/printwatcher-upload.jks
+storePassword=…
+keyAlias=upload
+keyPassword=…
+```
+
+The phone and watch apps must be signed with the same key (debug with debug, release with release)
+for the Data Layer to connect them. Play release steps, listing text and store graphics:
+[`docs/play/`](docs/play/README.md).
+
+On Samsung phones, an `adb install` update force-stops the app and monitoring doesn't restart until
+the app is opened again.
 
 ### Installing on the watch (Galaxy Watch, Wi-Fi debugging)
 
@@ -106,7 +135,7 @@ Both apps must be signed with the same key (the same machine's debug key is fine
 
 Settings (IP, serial, access code) are kept in three places, in this order of priority:
 
-1. **`Documents/BambuWatch/printer.json` on the phone**: the main copy once you tap *Allow file access*
+1. **`Documents/BambuWatch/printer.json` on the phone** (`github` flavor only): the main copy once you tap *Allow file access*
    (Android's "All files access", needed to read the file after a reinstall or an `adb push`).
    It survives clearing app data and uninstalling. Saving in the app rewrites it; hand edits are
    loaded on the next launch. If the file is invalid it's ignored, left untouched, and the app shows why.

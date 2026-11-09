@@ -58,7 +58,7 @@ fun WearStatusScreen(latest: StateFlow<Received?>) {
             val r = received
             if (r == null) {
                 Box(Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
-                    Text("Waiting for phone…\nOpen Bambu Watch on your phone.", textAlign = TextAlign.Center)
+                    Text("Waiting for phone…\nOpen printWatcher on your phone.", textAlign = TextAlign.Center)
                 }
                 return@Scaffold
             }
