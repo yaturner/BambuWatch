@@ -20,7 +20,9 @@
         android:name=".BambuWatchApp"
         android:allowBackup="false"
         android:requestLegacyExternalStorage="true"
+        android:icon="@mipmap/ic_launcher"
         android:label="Bambu Watch"
+        android:roundIcon="@mipmap/ic_launcher"
         android:theme="@android:style/Theme.Material.NoActionBar">
         <activity
             android:name=".MainActivity"
