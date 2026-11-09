@@ -30,7 +30,7 @@ class ComplicationContentTest {
     fun `printing shows percent, time left and a yellow partial ring`() {
         val c = content(running)
         assertEquals("67%", c.text)
-        assertEquals("1h12m", c.title)
+        assertEquals("1h", c.title)
         assertEquals(67f, c.value, 0f)
         assertEquals(TileTone.PRINTING, c.tone)
         assertEquals("Printing · Can Organizer · 67% · 1h12m", c.longText)
@@ -61,6 +61,14 @@ class ComplicationContentTest {
     fun `paused and preparing`() {
         assertEquals("Paused", content(running.copy(gcodeState = "PAUSE")).title)
         assertEquals("Prep", content(running.copy(gcodeState = "PREPARE", percent = 0)).text)
+    }
+
+    @Test
+    fun `short time fits in 3 characters`() {
+        assertEquals("4h", ComplicationContent.shortTime(253))
+        assertEquals("45m", ComplicationContent.shortTime(45))
+        assertEquals("9m", ComplicationContent.shortTime(9))
+        for (m in listOf(0, 9, 59, 60, 599)) assert(ComplicationContent.shortTime(m).length <= 3)
     }
 
     @Test

@@ -39,7 +39,7 @@ data class ComplicationContent(
             val title = when {
                 m.tone == TileTone.ERROR && printing -> "Error"
                 s.gcodeState == "PAUSE" -> "Paused"
-                printing -> compactTime(s.remainingMin)
+                printing -> shortTime(s.remainingMin)
                 else -> null
             }
             val value = when {
@@ -57,7 +57,13 @@ data class ComplicationContent(
             return ComplicationContent(value, text, title, longText, m.tone, hasData = true)
         }
 
-        /** "1h12m" / "45m": compact enough for a short-text complication title. */
+        /**
+         * At most 3 characters ("4h", "45m") for the short-text title: some faces (e.g. MD307)
+         * truncate anything longer ("4H1…"). Long text and the ongoing activity keep [compactTime].
+         */
+        fun shortTime(minutes: Int): String = if (minutes >= 60) "${minutes / 60}h" else "${minutes}m"
+
+        /** "1h12m" / "45m". */
         fun compactTime(minutes: Int): String =
             if (minutes >= 60) "${minutes / 60}h${(minutes % 60).toString().padStart(2, '0')}m" else "${minutes}m"
     }
