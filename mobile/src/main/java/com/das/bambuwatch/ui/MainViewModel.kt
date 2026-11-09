@@ -7,6 +7,7 @@ import com.das.bambuwatch.BambuWatchApp
 import com.das.bambuwatch.data.ConfigFileStatus
 import com.das.bambuwatch.shared.DemoPrinter
 import com.das.bambuwatch.shared.PrinterConfig
+import com.das.bambuwatch.monitor.Notifier
 import com.das.bambuwatch.monitor.PrinterMonitorService
 import com.das.bambuwatch.shared.PrinterState
 import com.das.bambuwatch.watch.WatchLinkStatus
@@ -109,10 +110,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    /** Leaves demo mode: back to the saved printer, or to setup if there is none. */
+    /** Leaves demo mode: back to the saved printer, or to setup if there is none. Clears demo alerts. */
     fun exitDemo() {
         viewModelScope.launch {
             store.setDemoMode(false)
+            // Restarting the repository cancels the demo first, so no further demo alerts are raised.
             val real = store.config.first()
             if (real?.isComplete == true) {
                 repository.start(real)
@@ -121,6 +123,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 PrinterMonitorService.stop(app)
                 repository.stop()
             }
+            Notifier(app).clearAlerts()
         }
     }
 

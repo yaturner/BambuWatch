@@ -143,6 +143,11 @@ class Notifier(private val context: Context) {
 
     fun clearConnectionLost() = manager.cancel(ID_CONNECTION)
 
+    /** Removes every alert (not the ongoing notification), e.g. the simulated ones when leaving demo mode. */
+    fun clearAlerts() {
+        listOf(ID_STATE_ALERT, ID_ERROR_ALERT, ID_PROGRESS_ALERT, ID_CONNECTION).forEach(manager::cancel)
+    }
+
     private fun progressDetail(state: PrinterState): String = buildList {
         state.remainingMinutes?.let { add(if (it >= 60) "${it / 60}h ${it % 60}m left" else "${it}m left") }
         if (state.layer != null && state.totalLayers != null) add("Layer ${state.layer}/${state.totalLayers}")
