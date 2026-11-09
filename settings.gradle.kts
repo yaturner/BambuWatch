@@ -16,4 +16,4 @@ dependencyResolutionManagement {
 rootProject.name = "BambuWatch"
 include(":shared")
 include(":mobile")
-// :wear is added in milestone 4.
+include(":wear")

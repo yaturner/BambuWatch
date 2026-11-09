@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * Keeps the printer connection alive while the app is in the background and
@@ -82,6 +83,9 @@ class PrinterMonitorService : Service() {
         val repo = app.printerRepository
         if (repo.state.value.connection == ConnectionState.DISCONNECTED) repo.start(config)
 
+        // Mirror state to the watch (Data Layer).
+        scope.launch { app.watchSync.run() }
+
         // Ongoing notification: only re-post when something visible changes.
         scope.launch {
             repo.state
@@ -121,6 +125,11 @@ class PrinterMonitorService : Service() {
     }
 
     override fun onDestroy() {
+        // Tell the watch monitoring stopped, so it doesn't keep showing a stale "printing".
+        val last = app.printerRepository.state.value
+        app.appScope.launch {
+            withTimeoutOrNull(5_000) { app.watchSync.sendNow(last.copy(connection = ConnectionState.DISCONNECTED)) }
+        }
         scope.cancel()
         app.printerRepository.stop()
         super.onDestroy()

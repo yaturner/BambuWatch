@@ -13,6 +13,7 @@ Printer ◄─MQTT/TLS :8883─► Phone (:mobile) ─Data Layer─► Watch (:w
 | Module | What |
 |---|---|
 | `:shared` | Pure Kotlin/JVM. `PrinterState`, `ReportParser` (merges partial MQTT reports), `WatchState` (phone→watch payload), `PrinterCommands`, Data Layer paths. Unit-tested. |
+| `:wear` | Wear OS app (same applicationId as the phone app). `DataLayerListenerService` receives `/printer/state`, `WatchStateCache` keeps the latest snapshot, simple Compose status screen. Declares the `bambuwatch_wear` capability so the phone can tell it's installed. |
 | `:mobile` | Android app. `PrinterMonitorService` (connectedDevice foreground service, restarts on boot) turns `PrintEventDetector` events into notifications that Wear OS mirrors to the watch. Setup screen (IP / serial / access code, code encrypted via Android Keystore), `PrinterRepository` (HiveMQ MQTT client, reconnect with backoff, `pushall` every 60 s), live status screen. |
 
 ## Milestones
@@ -20,7 +21,7 @@ Printer ◄─MQTT/TLS :8883─► Phone (:mobile) ─Data Layer─► Watch (:w
 - [x] 1. `:shared` state model + merge logic + tests (`./gradlew :shared:test`)
 - [x] 2. Phone MQTT client + setup screen, live status
 - [x] 3. Foreground service + finish/error notifications
-- [ ] 4. Data Layer publish + `:wear` module
+- [x] 4. Data Layer publish + `:wear` module (phone pacing by `WatchSyncPolicy`: important changes immediately, progress every 30 s, heartbeat every 5 min)
 - [ ] 5. Tile
 - [ ] 6. Complication + Ongoing Activity
 - [ ] 7. Watch → printer commands (needs LAN-only + Developer Mode on current firmware)
@@ -31,6 +32,18 @@ Printer ◄─MQTT/TLS :8883─► Phone (:mobile) ─Data Layer─► Watch (:w
 ./gradlew :shared:test :mobile:assembleDebug
 adb install -r mobile/build/outputs/apk/debug/mobile-debug.apk
 ```
+
+### Installing on the watch (Galaxy Watch, Wi-Fi debugging)
+
+1. Watch: Settings → About watch → Software information → tap **Software version** 5 times.
+2. Settings → Developer options → turn on **ADB debugging** and **Wireless debugging**.
+3. Wireless debugging → **Pair new device**: note the IP:port and pairing code, then on the computer:
+   ```
+   adb pair <ip>:<pair-port> <code>
+   adb connect <ip>:<port>          # the port shown on the main Wireless debugging screen
+   adb -s <ip>:<port> install -r wear/build/outputs/apk/debug/wear-debug.apk
+   ```
+Both apps must be signed with the same key (the same machine's debug key is fine) for the Data Layer to connect them.
 
 ## Printer settings
 

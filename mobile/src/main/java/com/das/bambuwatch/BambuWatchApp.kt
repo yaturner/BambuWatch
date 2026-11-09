@@ -4,6 +4,7 @@ import android.app.Application
 import com.das.bambuwatch.data.ConfigStore
 import com.das.bambuwatch.mqtt.PrinterRepository
 import com.das.bambuwatch.shared.PrinterConfig
+import com.das.bambuwatch.watch.WatchSync
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -26,4 +27,5 @@ class BambuWatchApp : Application() {
         )
     }
     val printerRepository by lazy { PrinterRepository(appScope) }
+    val watchSync by lazy { WatchSync(this, printerRepository.state) }
 }

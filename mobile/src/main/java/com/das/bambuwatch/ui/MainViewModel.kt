@@ -8,6 +8,7 @@ import com.das.bambuwatch.data.ConfigFileStatus
 import com.das.bambuwatch.shared.PrinterConfig
 import com.das.bambuwatch.monitor.PrinterMonitorService
 import com.das.bambuwatch.shared.PrinterState
+import com.das.bambuwatch.watch.WatchLinkStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -37,6 +38,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val printerState: StateFlow<PrinterState> = repository.state
 
     val fileStatus: StateFlow<ConfigFileStatus> = store.fileStatus
+
+    val watchLink: StateFlow<WatchLinkStatus> = app.watchSync.link
 
     /** Pre-fill for the setup form when nothing is saved (debug builds with printer.properties). */
     val setupDefaults: PrinterConfig? = store.setupDefaults
@@ -76,6 +79,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     /** Called on every resume: picks up file access granted in Settings and edits to printer.json. */
     fun onResume() {
+        viewModelScope.launch { app.watchSync.refreshLinkStatus() }
         viewModelScope.launch {
             val before = store.config.first()
             store.restore()

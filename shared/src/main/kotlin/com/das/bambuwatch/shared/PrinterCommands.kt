@@ -47,6 +47,10 @@ object PrinterCommands {
 object DataLayerPaths {
     const val STATE = "/printer/state"
     const val STATE_KEY = "state"
+    /** Epoch millis the phone sent the item; changes on every send so heartbeats propagate. */
+    const val SENT_AT_KEY = "sentAt"
+    /** Declared by the watch app (res/values/wear.xml) so the phone can tell it's installed. */
+    const val WATCH_CAPABILITY = "bambuwatch_wear"
     const val COMMAND = "/printer/cmd"
 }
 

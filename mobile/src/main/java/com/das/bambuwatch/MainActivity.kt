@@ -53,6 +53,7 @@ private fun App(vm: MainViewModel = viewModel()) {
     val printer by vm.printerState.collectAsStateWithLifecycle()
     val monitoring by vm.monitoringEnabled.collectAsStateWithLifecycle()
     val fileStatus by vm.fileStatus.collectAsStateWithLifecycle()
+    val watchLink by vm.watchLink.collectAsStateWithLifecycle()
 
     LifecycleResumeEffect(Unit) {
         vm.onResume()
@@ -79,6 +80,7 @@ private fun App(vm: MainViewModel = viewModel()) {
                     monitoringEnabled = monitoring,
                     fileStatus = fileStatus,
                     onFileAccessResult = vm::onResume,
+                    watchLink = watchLink,
                     onSetMonitoring = vm::setMonitoring,
                     onEdit = vm::edit,
                     onReconnect = vm::reconnect,

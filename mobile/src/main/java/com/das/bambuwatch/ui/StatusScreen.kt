@@ -43,6 +43,7 @@ import com.das.bambuwatch.shared.AmsTray
 import com.das.bambuwatch.shared.ConnectionState
 import com.das.bambuwatch.shared.GcodeState
 import com.das.bambuwatch.shared.PrinterState
+import com.das.bambuwatch.watch.WatchLinkStatus
 
 @Composable
 fun StatusScreen(
@@ -51,6 +52,7 @@ fun StatusScreen(
     monitoringEnabled: Boolean,
     fileStatus: ConfigFileStatus,
     onFileAccessResult: () -> Unit,
+    watchLink: WatchLinkStatus,
     onSetMonitoring: (Boolean) -> Unit,
     onEdit: () -> Unit,
     onReconnect: () -> Unit,
@@ -65,6 +67,7 @@ fun StatusScreen(
     ) {
         ConnectionBanner(state, printerIp)
         MonitoringCard(monitoringEnabled, onSetMonitoring)
+        WatchCard(watchLink, monitoringEnabled)
         if (monitoringEnabled) BatteryOptimizationCard()
 
         Card(Modifier.fillMaxWidth()) {
@@ -153,6 +156,35 @@ private fun ConnectionBanner(state: PrinterState, ip: String) {
                 Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
             }
         }
+    }
+}
+
+@Composable
+private fun WatchCard(link: WatchLinkStatus, monitoring: Boolean) {
+    val watch = link.connectedWatches.firstOrNull()
+    val (title, body) = when {
+        !link.apiAvailable -> "Watch" to "Wear OS isn't available on this phone."
+        watch == null -> "No watch connected" to "Pair your watch in Galaxy Wearable to see the print on your wrist."
+        link.appInstalledOn.isEmpty() -> "Watch: $watch" to
+            "Install Bambu Watch on the watch. Notifications still reach the watch without it."
+        !monitoring -> "Watch: $watch" to "Turn on background monitoring to send updates to the watch."
+        link.lastSentAt == 0L -> "Watch: $watch" to "Waiting for the first printer update to send."
+        else -> "Watch: $watch" to "Watch app installed. Last update sent ${formatAgo(link.lastSentAt)}."
+    }
+    Card(Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp)) {
+            Text(title, style = MaterialTheme.typography.titleMedium)
+            Text(body, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+}
+
+private fun formatAgo(epochMillis: Long): String {
+    val secs = ((System.currentTimeMillis() - epochMillis) / 1000).coerceAtLeast(0)
+    return when {
+        secs < 60 -> "${secs}s ago"
+        secs < 3600 -> "${secs / 60} min ago"
+        else -> "${secs / 3600} h ago"
     }
 }
 

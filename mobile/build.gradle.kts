@@ -79,6 +79,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.play.services.wearable)
+    implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.hivemq.mqtt.client)
     // Needed directly for InsecureTrustManagerFactory (HiveMQ declares it as implementation-only).
     implementation(libs.netty.handler)
