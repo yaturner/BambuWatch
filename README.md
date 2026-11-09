@@ -1,12 +1,67 @@
 # BambuWatch
 
-Galaxy Watch (Wear OS) companion for a Bambu Lab printer. The phone keeps a single
-LAN MQTT connection to the printer and (from milestone 4) relays a compact state
-snapshot to a watch tile over the Wearable Data Layer.
+**Your Bambu Lab print, on your wrist.** BambuWatch is an Android phone app plus a Wear OS
+watch app that shows a Bambu Lab printer's progress on a Galaxy Watch (or any Wear OS watch)
+and alerts you when a print finishes or needs attention. Everything stays on your local
+network: no Bambu cloud account, no third-party servers.
+
+<table>
+  <tr>
+    <td align="center"><img src="docs/screenshots/watch-tile-printing.png" width="220" alt="Watch tile while printing"><br><sub>Tile while printing</sub></td>
+    <td align="center"><img src="docs/screenshots/watch-tile-done.png" width="220" alt="Watch tile when the print is done"><br><sub>Tile when done</sub></td>
+    <td align="center"><img src="docs/screenshots/phone-status.png" width="220" alt="Phone app status screen"><br><sub>Phone app</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/watch-app.png" width="220" alt="Watch app"><br><sub>Watch app</sub></td>
+    <td align="center" colspan="2"><img src="docs/screenshots/watch-complication.png" width="300" alt="Watch face complication showing 4h and 7% plus the print icon"><br><sub>Watch-face complication ("4H 7%") and the print-in-progress icon</sub></td>
+  </tr>
+</table>
+
+## Features
+
+**On the watch**
+- **Tile** with a progress ring that's **green** when idle or done, **yellow** while printing and
+  **red** on an error, plus percent, job name, time left and layer. Updates live.
+- **Watch-face complication**: progress ring, "67%" with time left, or a one-line summary,
+  depending on the slot.
+- **Print-in-progress icon** on the watch face (a Wear OS Ongoing Activity) while a print runs.
+- **Alerts** mirrored from the phone: print finished, stopped, paused, errors, HMS alerts,
+  first layer done, lost connection.
+
+**On the phone**
+- Live status: progress, time left, layer, nozzle/bed temperatures, AMS filament colors and amounts.
+- Background monitoring with notifications, even when the app is closed.
+- Printer settings saved to a plain file on the phone, so they survive reinstalling.
+
+BambuWatch only **reads** printer status. It never sends commands that could affect a print.
+Watch controls (pause/resume) may come later as a separate, opt-in feature.
+
+## Requirements
+
+- A Bambu Lab printer on your local network with its **LAN access code** (tested with a **P1S**).
+  The printer's IP address, serial number and access code are on its screen under
+  **Settings → Network** and **Settings → Device**.
+- An Android phone (Android 8.0+) on the same network.
+- A Wear OS 3+ watch paired with the phone (tested with a **Galaxy Watch6**, Wear OS 6).
+
+## Getting started
+
+There's no store release yet; build and install with Android Studio or the command line
+(see [Build](#build)), then:
+
+1. Open **Bambu Watch** on the phone and enter the printer's IP address, serial number and access code.
+2. Allow notifications, and tap **Allow unrestricted** on the battery card so alerts aren't delayed.
+3. Install the watch app, then add the **Bambu print** tile and complication from the watch.
 
 ```
-Printer ◄─MQTT/TLS :8883─► Phone (:mobile) ─Data Layer─► Watch (:wear, M4+)
+Printer ◄─MQTT/TLS :8883─► Phone app ─Wear OS Data Layer─► Watch app
 ```
+
+*Not affiliated with or endorsed by Bambu Lab.*
+
+---
+
+# For developers
 
 ## Modules
 
@@ -26,7 +81,7 @@ Printer ◄─MQTT/TLS :8883─► Phone (:mobile) ─Data Layer─► Watch (:w
 - [x] 6. Complication + Ongoing Activity
   - `PrinterComplicationService`: RANGED_VALUE (ring + percent, green/yellow/red color ramp on faces that support it), SHORT_TEXT ("67%" / "1h12m"), LONG_TEXT. Add it from the watch face's Customize screen.
   - `PrintOngoingActivity`: printer icon on the watch face while a print runs ("67% · 1h12m"), removed when it ends.
-- [ ] 7. Watch → printer commands (needs LAN-only + Developer Mode on current firmware)
+- [ ] 7. Watch → printer commands: deferred; may become a separate app or an opt-in setting (needs LAN-only + Developer Mode on current firmware)
 
 ## Build
 
