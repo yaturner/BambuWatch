@@ -3,6 +3,7 @@ package com.das.bambuwatch
 import android.app.Application
 import com.das.bambuwatch.data.ConfigStore
 import com.das.bambuwatch.mqtt.PrinterRepository
+import com.das.bambuwatch.shared.PrinterConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -14,6 +15,15 @@ import kotlinx.coroutines.SupervisorJob
  */
 class BambuWatchApp : Application() {
     val appScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    val configStore by lazy { ConfigStore(this) }
+    val configStore by lazy {
+        ConfigStore(
+            this,
+            defaults = PrinterConfig(
+                BuildConfig.DEFAULT_PRINTER_IP,
+                BuildConfig.DEFAULT_PRINTER_SERIAL,
+                BuildConfig.DEFAULT_PRINTER_ACCESS_CODE,
+            ),
+        )
+    }
     val printerRepository by lazy { PrinterRepository(appScope) }
 }

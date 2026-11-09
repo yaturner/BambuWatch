@@ -1,5 +1,10 @@
 package com.das.bambuwatch.ui
 
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
+import android.os.PowerManager
+import android.provider.Settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -19,13 +24,21 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LifecycleResumeEffect
+import com.das.bambuwatch.data.ConfigFileStatus
 import com.das.bambuwatch.shared.AmsTray
 import com.das.bambuwatch.shared.ConnectionState
 import com.das.bambuwatch.shared.GcodeState
@@ -35,6 +48,10 @@ import com.das.bambuwatch.shared.PrinterState
 fun StatusScreen(
     state: PrinterState,
     printerIp: String,
+    monitoringEnabled: Boolean,
+    fileStatus: ConfigFileStatus,
+    onFileAccessResult: () -> Unit,
+    onSetMonitoring: (Boolean) -> Unit,
     onEdit: () -> Unit,
     onReconnect: () -> Unit,
 ) {
@@ -47,6 +64,8 @@ fun StatusScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         ConnectionBanner(state, printerIp)
+        MonitoringCard(monitoringEnabled, onSetMonitoring)
+        if (monitoringEnabled) BatteryOptimizationCard()
 
         Card(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -106,6 +125,8 @@ fun StatusScreen(
             }
         }
 
+        ConfigFileCard(fileStatus, onFileAccessResult)
+
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             OutlinedButton(onClick = onEdit) { Text("Printer settings") }
             OutlinedButton(onClick = onReconnect) { Text("Reconnect") }
@@ -131,6 +152,53 @@ private fun ConnectionBanner(state: PrinterState, ip: String) {
             state.lastError?.let {
                 Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
             }
+        }
+    }
+}
+
+@Composable
+private fun MonitoringCard(enabled: Boolean, onSet: (Boolean) -> Unit) {
+    Card(Modifier.fillMaxWidth()) {
+        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text("Background monitoring", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    if (enabled) "Notifies you (and your watch) when a print finishes or needs attention."
+                    else "Off. You won't get print notifications.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Switch(checked = enabled, onCheckedChange = onSet)
+        }
+    }
+}
+
+/** Battery optimization can delay or drop the background connection; offer to exempt the app. */
+@SuppressLint("BatteryLife")
+@Composable
+private fun BatteryOptimizationCard() {
+    val context = LocalContext.current
+    val power = remember { context.getSystemService(PowerManager::class.java) }
+    var optimized by remember { mutableStateOf(!power.isIgnoringBatteryOptimizations(context.packageName)) }
+    LifecycleResumeEffect(Unit) {
+        optimized = !power.isIgnoringBatteryOptimizations(context.packageName)
+        onPauseOrDispose { }
+    }
+    if (!optimized) return
+    Card(Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text("Battery optimization is on", style = MaterialTheme.typography.titleMedium)
+            Text(
+                "Android may pause the printer connection while the screen is off, which delays alerts.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            OutlinedButton(onClick = {
+                context.startActivity(
+                    Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:${context.packageName}")),
+                )
+            }) { Text("Allow unrestricted") }
         }
     }
 }

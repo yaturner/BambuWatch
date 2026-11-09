@@ -1,8 +1,17 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 }
+
+// Optional, gitignored: pre-fills debug builds with your printer (see printer.properties.example).
+val printerProps = Properties().apply {
+    rootProject.file("printer.properties").takeIf { it.isFile }?.inputStream()?.use { load(it) }
+}
+fun printerProp(key: String): String =
+    "\"" + printerProps.getProperty(key, "").trim().replace("\\", "\\\\").replace("\"", "\\\"") + "\""
 
 android {
     namespace = "com.das.bambuwatch"
@@ -18,8 +27,17 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "DEFAULT_PRINTER_IP", printerProp("printer.ip"))
+            buildConfigField("String", "DEFAULT_PRINTER_SERIAL", printerProp("printer.serial"))
+            buildConfigField("String", "DEFAULT_PRINTER_ACCESS_CODE", printerProp("printer.accessCode"))
+        }
         release {
             isMinifyEnabled = false
+            // Never bake credentials into a release build.
+            buildConfigField("String", "DEFAULT_PRINTER_IP", "\"\"")
+            buildConfigField("String", "DEFAULT_PRINTER_SERIAL", "\"\"")
+            buildConfigField("String", "DEFAULT_PRINTER_ACCESS_CODE", "\"\"")
         }
     }
 
@@ -33,6 +51,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     packaging {

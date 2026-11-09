@@ -1,7 +1,7 @@
 package com.das.bambuwatch.mqtt
 
 import android.util.Log
-import com.das.bambuwatch.data.PrinterConfig
+import com.das.bambuwatch.shared.PrinterConfig
 import com.das.bambuwatch.shared.ConnectionState
 import com.das.bambuwatch.shared.PrinterCommands
 import com.das.bambuwatch.shared.PrinterState

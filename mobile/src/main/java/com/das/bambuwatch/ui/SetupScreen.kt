@@ -28,13 +28,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import com.das.bambuwatch.data.PrinterConfig
+import com.das.bambuwatch.data.ConfigFileStatus
+import com.das.bambuwatch.shared.PrinterConfig
 
 private val IPV4 = Regex("""^((25[0-5]|2[0-4]\d|1?\d?\d)\.){3}(25[0-5]|2[0-4]\d|1?\d?\d)$""")
 
 @Composable
 fun SetupScreen(
     initial: PrinterConfig?,
+    fileStatus: ConfigFileStatus,
+    onFileAccessResult: () -> Unit,
     onSave: (PrinterConfig) -> Unit,
     onCancel: (() -> Unit)?,
 ) {
@@ -93,5 +96,6 @@ fun SetupScreen(
                 Text("Save & connect")
             }
         }
+        ConfigFileCard(fileStatus, onFileAccessResult)
     }
 }

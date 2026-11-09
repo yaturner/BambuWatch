@@ -1,0 +1,5 @@
+# Copy to printer.properties (gitignored) to pre-fill DEBUG builds with your printer.
+# Used only when the app has no saved settings and no Documents/BambuWatch/printer.json.
+printer.ip=192.168.1.50
+printer.serial=01P00A123456789
+printer.accessCode=12345678

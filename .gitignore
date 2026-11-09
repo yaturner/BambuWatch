@@ -8,3 +8,6 @@ build/
 .externalNativeBuild
 .cxx
 .kotlin/
+
+# Local printer credentials for debug builds
+/printer.properties

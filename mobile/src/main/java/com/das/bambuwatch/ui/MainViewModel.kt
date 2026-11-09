@@ -4,7 +4,9 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.das.bambuwatch.BambuWatchApp
-import com.das.bambuwatch.data.PrinterConfig
+import com.das.bambuwatch.data.ConfigFileStatus
+import com.das.bambuwatch.shared.PrinterConfig
+import com.das.bambuwatch.monitor.PrinterMonitorService
 import com.das.bambuwatch.shared.PrinterState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,37 +25,74 @@ sealed interface ConfigUiState {
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val app = application as BambuWatchApp
     private val repository = app.printerRepository
+    private val store = app.configStore
 
-    val config: StateFlow<ConfigUiState> = app.configStore.config
+    val config: StateFlow<ConfigUiState> = store.config
         .map<PrinterConfig?, ConfigUiState> { ConfigUiState.Loaded(it) }
         .stateIn(viewModelScope, SharingStarted.Eagerly, ConfigUiState.Loading)
 
+    val monitoringEnabled: StateFlow<Boolean> = store.monitoringEnabled
+        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+
     val printerState: StateFlow<PrinterState> = repository.state
+
+    val fileStatus: StateFlow<ConfigFileStatus> = store.fileStatus
+
+    /** Pre-fill for the setup form when nothing is saved (debug builds with printer.properties). */
+    val setupDefaults: PrinterConfig? = store.setupDefaults
 
     private val _editing = MutableStateFlow(false)
     val editing: StateFlow<Boolean> = _editing.asStateFlow()
 
     init {
-        // Auto-connect with the saved config on launch, unless already connected (e.g. after rotation).
+        // The service owns the connection. Starting it here (app in foreground) is always allowed;
+        // if it's already running this is a no-op.
         viewModelScope.launch {
-            val saved = app.configStore.config.first()
-            if (saved != null && saved.isComplete && repository.state.value.updatedAt == 0L) {
-                repository.start(saved)
+            store.restore()
+            val saved = store.config.first()
+            if (saved?.isComplete == true && store.monitoringEnabled.first()) {
+                PrinterMonitorService.start(app)
             }
         }
     }
 
     fun save(config: PrinterConfig) {
         viewModelScope.launch {
-            app.configStore.save(config)
+            store.save(config)
+            store.setMonitoringEnabled(true)
             _editing.value = false
-            repository.start(app.configStore.config.first() ?: config)
+            // Restart the connection with the new settings, then make sure the service is up.
+            repository.start(store.config.first() ?: config)
+            PrinterMonitorService.start(app)
+        }
+    }
+
+    fun setMonitoring(enabled: Boolean) {
+        viewModelScope.launch {
+            store.setMonitoringEnabled(enabled)
+            if (enabled) PrinterMonitorService.start(app) else PrinterMonitorService.stop(app)
+        }
+    }
+
+    /** Called on every resume: picks up file access granted in Settings and edits to printer.json. */
+    fun onResume() {
+        viewModelScope.launch {
+            val before = store.config.first()
+            store.restore()
+            val after = store.config.first()
+            if (after != null && after != before && after.isComplete) {
+                repository.start(after)
+                if (store.monitoringEnabled.first()) PrinterMonitorService.start(app)
+            }
         }
     }
 
     fun edit() { _editing.value = true }
     fun cancelEdit() { _editing.value = false }
+
     fun reconnect() {
-        (config.value as? ConfigUiState.Loaded)?.config?.let(repository::start)
+        val cfg = (config.value as? ConfigUiState.Loaded)?.config ?: return
+        repository.start(cfg)
+        if (monitoringEnabled.value) PrinterMonitorService.start(app)
     }
 }
