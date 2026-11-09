@@ -54,6 +54,8 @@ private fun App(vm: MainViewModel = viewModel()) {
     val monitoring by vm.monitoringEnabled.collectAsStateWithLifecycle()
     val fileStatus by vm.fileStatus.collectAsStateWithLifecycle()
     val watchLink by vm.watchLink.collectAsStateWithLifecycle()
+    val demo by vm.demoMode.collectAsStateWithLifecycle()
+    val savedPrinter by vm.savedPrinter.collectAsStateWithLifecycle()
 
     LifecycleResumeEffect(Unit) {
         vm.onResume()
@@ -66,17 +68,20 @@ private fun App(vm: MainViewModel = viewModel()) {
             val config = cs.config
             if (config == null || editing) {
                 SetupScreen(
-                    initial = config ?: vm.setupDefaults,
+                    initial = savedPrinter ?: vm.setupDefaults,
                     fileStatus = fileStatus,
                     onFileAccessResult = vm::onResume,
                     onSave = vm::save,
                     onCancel = if (config != null) vm::cancelEdit else null,
+                    onTryDemo = if (demo) null else vm::startDemo,
                 )
             } else {
                 RequestNotificationPermission()
                 StatusScreen(
                     state = printer,
-                    printerIp = config.ip,
+                    printerIp = if (demo) "demo printer" else config.ip,
+                    demo = demo,
+                    onExitDemo = vm::exitDemo,
                     monitoringEnabled = monitoring,
                     fileStatus = fileStatus,
                     onFileAccessResult = vm::onResume,

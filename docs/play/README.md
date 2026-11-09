@@ -77,10 +77,18 @@ printWatcher is an independent app and is not affiliated with or endorsed by Bam
 
 **App access**: *All or some functionality is restricted* → add instructions:
 ```
-printWatcher needs a Bambu Lab 3D printer on the same local network, which reviewers won't
-have. Without one, the app opens to the setup screen (printer IP, serial number, LAN access
-code) and then shows "Connecting…" / a connection error; the watch tile shows "No data".
-There is no login or account. Screenshots in the listing show the app connected to a P1S.
+printWatcher normally needs a Bambu Lab 3D printer on the same local network. To review
+without one, use the built-in demo mode (no login or account is needed):
+
+1. Open printWatcher on the phone. On the "Connect to your printer" screen, scroll down and
+   tap "Try demo mode". Allow notifications when asked.
+2. The app shows a simulated printer. A 5-minute cycle repeats: preparing, printing, a paused
+   print with an alert, finished and idle. Alerts ("First layer done", "Printer needs
+   attention", "Print finished") appear as notifications.
+3. Wear OS: install printWatcher on a watch paired with the phone. Add the "printWatcher" tile
+   and the complication. They show the same simulated print within a few seconds (the ring is
+   yellow while printing, red during the alert, green when finished or idle).
+4. To leave demo mode, tap "Exit demo" on the status screen.
 ```
 
 **Content rating** (IARC questionnaire): category *Utility, productivity, communication or other*;

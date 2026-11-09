@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.das.bambuwatch.BambuWatchApp
 import com.das.bambuwatch.data.ConfigFileStatus
+import com.das.bambuwatch.shared.DemoPrinter
 import com.das.bambuwatch.shared.PrinterConfig
 import com.das.bambuwatch.monitor.PrinterMonitorService
 import com.das.bambuwatch.shared.PrinterState
@@ -31,6 +32,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val config: StateFlow<ConfigUiState> = store.config
         .map<PrinterConfig?, ConfigUiState> { ConfigUiState.Loaded(it) }
         .stateIn(viewModelScope, SharingStarted.Eagerly, ConfigUiState.Loading)
+
+    val demoMode: StateFlow<Boolean> = store.demoMode
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    /** The real printer saved before demo mode, to pre-fill the setup form. */
+    val savedPrinter: StateFlow<PrinterConfig?> = store.savedPrinter
+        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     val monitoringEnabled: StateFlow<Boolean> = store.monitoringEnabled
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
@@ -87,6 +95,31 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             if (after != null && after != before && after.isComplete) {
                 repository.start(after)
                 if (store.monitoringEnabled.first()) PrinterMonitorService.start(app)
+            }
+        }
+    }
+
+    fun startDemo() {
+        viewModelScope.launch {
+            store.setDemoMode(true)
+            store.setMonitoringEnabled(true)
+            _editing.value = false
+            repository.start(DemoPrinter.CONFIG)
+            PrinterMonitorService.start(app)
+        }
+    }
+
+    /** Leaves demo mode: back to the saved printer, or to setup if there is none. */
+    fun exitDemo() {
+        viewModelScope.launch {
+            store.setDemoMode(false)
+            val real = store.config.first()
+            if (real?.isComplete == true) {
+                repository.start(real)
+                if (store.monitoringEnabled.first()) PrinterMonitorService.start(app)
+            } else {
+                PrinterMonitorService.stop(app)
+                repository.stop()
             }
         }
     }

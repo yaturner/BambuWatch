@@ -21,6 +21,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -51,6 +52,8 @@ import com.das.bambuwatch.watch.WatchLinkStatus
 fun StatusScreen(
     state: PrinterState,
     printerIp: String,
+    demo: Boolean,
+    onExitDemo: () -> Unit,
     monitoringEnabled: Boolean,
     fileStatus: ConfigFileStatus,
     onFileAccessResult: () -> Unit,
@@ -68,6 +71,7 @@ fun StatusScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         ConnectionBanner(state, printerIp)
+        if (demo) DemoCard(onExitDemo)
         MonitoringCard(monitoringEnabled, onSetMonitoring)
         WatchCard(watchLink, monitoringEnabled)
         if (monitoringEnabled) BatteryOptimizationCard()
@@ -157,6 +161,27 @@ private fun ConnectionBanner(state: PrinterState, ip: String) {
             state.lastError?.let {
                 Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
             }
+        }
+    }
+}
+
+@Composable
+private fun DemoCard(onExit: () -> Unit) {
+    Card(
+        Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
+    ) {
+        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text("Demo mode", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    "A simulated printer. A 5-minute cycle shows preparing, printing, an alert, " +
+                        "finished and idle, on your phone and watch.",
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+            Spacer(Modifier.size(8.dp))
+            OutlinedButton(onClick = onExit) { Text("Exit demo") }
         }
     }
 }

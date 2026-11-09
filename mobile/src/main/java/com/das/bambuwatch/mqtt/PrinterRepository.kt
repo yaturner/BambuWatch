@@ -3,6 +3,7 @@ package com.das.bambuwatch.mqtt
 import android.util.Log
 import com.das.bambuwatch.shared.PrinterConfig
 import com.das.bambuwatch.shared.ConnectionState
+import com.das.bambuwatch.shared.DemoPrinter
 import com.das.bambuwatch.shared.PrinterCommands
 import com.das.bambuwatch.shared.PrinterState
 import com.das.bambuwatch.shared.ReportParser
@@ -39,7 +40,19 @@ class PrinterRepository(private val scope: CoroutineScope) {
     fun start(config: PrinterConfig) {
         connectionJob?.cancel()
         _state.value = PrinterState(connection = ConnectionState.CONNECTING)
-        connectionJob = scope.launch { connectionLoop(config) }
+        connectionJob = scope.launch {
+            if (config == DemoPrinter.CONFIG) demoLoop() else connectionLoop(config)
+        }
+    }
+
+    /** Demo mode: no network at all; samples the simulated printer. [send] stays a no-op. */
+    private suspend fun demoLoop() {
+        val startedAt = System.currentTimeMillis()
+        while (true) {
+            val now = System.currentTimeMillis()
+            _state.value = DemoPrinter.stateAt(now - startedAt, now)
+            delay(DemoPrinter.TICK_MS)
+        }
     }
 
     @Synchronized

@@ -12,6 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -41,6 +42,8 @@ fun SetupScreen(
     onFileAccessResult: () -> Unit,
     onSave: (PrinterConfig) -> Unit,
     onCancel: (() -> Unit)?,
+    /** Null hides the demo option (already in demo mode). */
+    onTryDemo: (() -> Unit)?,
 ) {
     var ip by rememberSaveable { mutableStateOf(initial?.ip.orEmpty()) }
     var serial by rememberSaveable { mutableStateOf(initial?.serial.orEmpty()) }
@@ -98,5 +101,16 @@ fun SetupScreen(
             }
         }
         if (BuildConfig.SETTINGS_FILE_ENABLED) ConfigFileCard(fileStatus, onFileAccessResult)
+        if (onTryDemo != null) {
+            HorizontalDivider()
+            Text("No printer handy?", style = MaterialTheme.typography.titleMedium)
+            Text(
+                "Demo mode shows a simulated print on your phone and watch, including alerts. " +
+                    "It doesn't connect to anything.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            OutlinedButton(onClick = onTryDemo) { Text("Try demo mode") }
+        }
     }
 }

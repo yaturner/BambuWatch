@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.das.bambuwatch.shared.DemoPrinter
 import com.das.bambuwatch.shared.PrinterConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -45,7 +46,20 @@ class ConfigStore(
     private val _fileStatus = MutableStateFlow<ConfigFileStatus>(ConfigFileStatus.NoAccess)
     val fileStatus: StateFlow<ConfigFileStatus> = _fileStatus.asStateFlow()
 
-    val config: Flow<PrinterConfig?> = context.dataStore.data.map(::decodeStored)
+    /** The active config: [DemoPrinter.CONFIG] while demo mode is on, else the saved printer. */
+    val config: Flow<PrinterConfig?> = context.dataStore.data.map { prefs ->
+        if (prefs[KEY_DEMO] == true) DemoPrinter.CONFIG else decodeStored(prefs)
+    }
+
+    /** The saved real printer, ignoring demo mode (pre-fills the setup form). */
+    val savedPrinter: Flow<PrinterConfig?> = context.dataStore.data.map(::decodeStored)
+
+    val demoMode: Flow<Boolean> = context.dataStore.data.map { it[KEY_DEMO] ?: false }
+
+    /** Demo mode shows a simulated printer (for Play review and trying the app without one). */
+    suspend fun setDemoMode(enabled: Boolean) {
+        context.dataStore.edit { it[KEY_DEMO] = enabled }
+    }
 
     /** Whether the background monitor service should run. Defaults to on. */
     val monitoringEnabled: Flow<Boolean> = context.dataStore.data.map { it[KEY_MONITORING] ?: true }
@@ -57,10 +71,11 @@ class ConfigStore(
         context.dataStore.edit { it[KEY_MONITORING] = enabled }
     }
 
-    /** Saves to DataStore and, if possible, to printer.json. */
+    /** Saves to DataStore and, if possible, to printer.json. Ends demo mode. */
     suspend fun save(config: PrinterConfig) {
         val normalized = config.normalized()
         writeStored(normalized)
+        setDemoMode(false)
         if (!fileEnabled) return
         val written = withContext(Dispatchers.IO) { configFile.write(normalized) }
         _fileStatus.value = when {
@@ -129,5 +144,6 @@ class ConfigStore(
         val KEY_SERIAL = stringPreferencesKey("serial")
         val KEY_CODE = stringPreferencesKey("access_code_enc")
         val KEY_MONITORING = booleanPreferencesKey("monitoring_enabled")
+        val KEY_DEMO = booleanPreferencesKey("demo_mode")
     }
 }
