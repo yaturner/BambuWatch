@@ -17,6 +17,18 @@ network: no Bambu cloud account, no third-party servers.
   </tr>
 </table>
 
+**The tile through a print** (captured in demo mode):
+
+<table>
+  <tr>
+    <td align="center"><img src="docs/screenshots/tile-preparing.png" width="150" alt="Tile while preparing: dim yellow ring, Heating"><br><sub>Preparing</sub></td>
+    <td align="center"><img src="docs/screenshots/tile-printing.png" width="150" alt="Tile while printing: yellow ring at 50%"><br><sub>Printing</sub></td>
+    <td align="center"><img src="docs/screenshots/tile-alert.png" width="150" alt="Tile paused with an alert: red ring at 50%"><br><sub>Needs attention</sub></td>
+    <td align="center"><img src="docs/screenshots/tile-done.png" width="150" alt="Tile when done: green ring at 100%"><br><sub>Done</sub></td>
+    <td align="center"><img src="docs/screenshots/tile-idle.png" width="150" alt="Tile when idle: green ring, Ready"><br><sub>Idle</sub></td>
+  </tr>
+</table>
+
 ## Features
 
 **On the watch**
