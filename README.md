@@ -17,7 +17,7 @@ network: no Bambu cloud account, no third-party servers.
   </tr>
 </table>
 
-**The tile through a print** (captured in demo mode):
+**Printer states** (watch tile, captured in demo mode):
 
 <table>
   <tr>
