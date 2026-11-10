@@ -19,6 +19,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -44,11 +45,20 @@ fun SetupScreen(
     onCancel: (() -> Unit)?,
     /** Null hides the demo option (already in demo mode). */
     onTryDemo: (() -> Unit)?,
+    discovery: DiscoveryUiState,
+    onFindPrinters: () -> Unit,
+    onStopFindingPrinters: () -> Unit,
 ) {
     var ip by rememberSaveable { mutableStateOf(initial?.ip.orEmpty()) }
     var serial by rememberSaveable { mutableStateOf(initial?.serial.orEmpty()) }
     var code by rememberSaveable { mutableStateOf(initial?.accessCode.orEmpty()) }
     var showCode by rememberSaveable { mutableStateOf(false) }
+
+    // Listen for printer announcements while this screen is showing.
+    DisposableEffect(Unit) {
+        onFindPrinters()
+        onDispose { onStopFindingPrinters() }
+    }
 
     val ipError = ip.isNotEmpty() && !IPV4.matches(ip.trim())
     val canSave = IPV4.matches(ip.trim()) && serial.isNotBlank() && code.isNotBlank()
@@ -64,10 +74,18 @@ fun SetupScreen(
     ) {
         Text("Connect to your printer", style = MaterialTheme.typography.headlineSmall)
         Text(
-            "On the printer: Settings → Network (WLAN) shows the IP address and access code. " +
-                "The serial number is under Settings → Device.",
+            "Pick your printer below, or type its details. The access code is on the printer under " +
+                "Settings → Network (WLAN); the IP address is there too, and the serial number is under " +
+                "Settings → Device.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        DiscoveryCard(
+            state = discovery,
+            selectedIp = ip,
+            selectedSerial = serial,
+            onSearch = onFindPrinters,
+            onPick = { ip = it.ip; serial = it.serial },
         )
         OutlinedTextField(
             value = ip, onValueChange = { ip = it },

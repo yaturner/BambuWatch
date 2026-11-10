@@ -56,6 +56,7 @@ private fun App(vm: MainViewModel = viewModel()) {
     val watchLink by vm.watchLink.collectAsStateWithLifecycle()
     val demo by vm.demoMode.collectAsStateWithLifecycle()
     val savedPrinter by vm.savedPrinter.collectAsStateWithLifecycle()
+    val discovery by vm.discoveryState.collectAsStateWithLifecycle()
 
     LifecycleResumeEffect(Unit) {
         vm.onResume()
@@ -74,6 +75,9 @@ private fun App(vm: MainViewModel = viewModel()) {
                     onSave = vm::save,
                     onCancel = if (config != null) vm::cancelEdit else null,
                     onTryDemo = if (demo) null else vm::startDemo,
+                    discovery = discovery,
+                    onFindPrinters = vm::findPrinters,
+                    onStopFindingPrinters = vm::stopFindingPrinters,
                 )
             } else {
                 RequestNotificationPermission()

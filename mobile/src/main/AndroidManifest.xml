@@ -9,6 +9,8 @@
     <!-- Required by Android 14+ for a connectedDevice foreground service (normal permission, no prompt). -->
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- Hear printer announcements on the local network (setup's "Printers found"; normal permission). -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <!-- Storage and direct battery-optimization permissions are github-flavor only
          (src/github/AndroidManifest.xml); Google Play restricts them. -->
 

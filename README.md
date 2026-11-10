@@ -49,7 +49,10 @@ Watch controls (pause/resume) may come later as a separate, opt-in feature.
 There's no store release yet (a Google Play release is being prepared); build and install with
 Android Studio or the command line (see [Build](#build)), then:
 
-1. Open **printWatcher** on the phone and enter the printer's IP address, serial number and access code.
+1. Open **printWatcher** on the phone. Your printer appears under **Printers found** (the app
+   listens for the announcements Bambu printers broadcast on UDP port 2021); tap it to fill in the
+   IP address and serial number, then enter the access code. You can also type all three. No
+   printer? Tap **Try demo mode** to see a simulated print.
 2. Allow notifications, and turn off battery optimization for the app (the battery card on the
    status screen) so alerts aren't delayed.
 3. Install the watch app, then add the **printWatcher** tile and complication from the watch.
@@ -165,3 +168,7 @@ The phone's next update (at most 5 min) replaces the fake state.
 - Publishes use QoS 0: the printer's broker never PUBACKs QoS 1.
 - TLS currently trusts the printer's self-signed cert unconditionally (LAN only). TODO: pin the fingerprint.
 - `mc_remaining_time` is treated as minutes; confirm against a live print.
+
+## License
+
+[MIT](LICENSE) © 2026 Jim Turner. printWatcher is not affiliated with or endorsed by Bambu Lab.

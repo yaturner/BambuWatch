@@ -19,6 +19,19 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.update
+import android.util.Log
+import com.das.bambuwatch.discovery.PrinterDiscovery
+import com.das.bambuwatch.shared.DiscoveredPrinter
+
+data class DiscoveryUiState(
+    val searching: Boolean = false,
+    val found: List<DiscoveredPrinter> = emptyList(),
+    val error: String? = null,
+)
 
 sealed interface ConfigUiState {
     data object Loading : ConfigUiState
@@ -52,6 +65,41 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     /** Pre-fill for the setup form when nothing is saved (debug builds with printer.properties). */
     val setupDefaults: PrinterConfig? = store.setupDefaults
+
+    private val discovery = PrinterDiscovery(application)
+    private var discoveryJob: Job? = null
+    private val _discovery = MutableStateFlow(DiscoveryUiState())
+    val discoveryState: StateFlow<DiscoveryUiState> = _discovery.asStateFlow()
+
+    /** Listens for printer announcements for [DISCOVERY_MS]; the setup screen calls this when shown. */
+    fun findPrinters() {
+        discoveryJob?.cancel()
+        _discovery.update { it.copy(searching = true, error = null) }
+        discoveryJob = viewModelScope.launch {
+            try {
+                withTimeoutOrNull(DISCOVERY_MS) {
+                    discovery.announcements().collect { p ->
+                        _discovery.update { s ->
+                            if (p in s.found) s
+                            else s.copy(found = (s.found.filterNot { it.serial == p.serial } + p).sortedBy { it.ip })
+                        }
+                    }
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.w("MainViewModel", "Printer discovery failed", e)
+                _discovery.update { it.copy(error = "Couldn't listen on the network: ${e.message}") }
+            } finally {
+                _discovery.update { it.copy(searching = false) }
+            }
+        }
+    }
+
+    fun stopFindingPrinters() {
+        discoveryJob?.cancel()
+        discoveryJob = null
+    }
 
     private val _editing = MutableStateFlow(false)
     val editing: StateFlow<Boolean> = _editing.asStateFlow()
@@ -134,5 +182,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val cfg = (config.value as? ConfigUiState.Loaded)?.config ?: return
         repository.start(cfg)
         if (monitoringEnabled.value) PrinterMonitorService.start(app)
+    }
+
+    private companion object {
+        const val DISCOVERY_MS = 30_000L
     }
 }
