@@ -140,6 +140,7 @@ fun StatusScreen(
             OutlinedButton(onClick = onEdit) { Text("Printer settings") }
             OutlinedButton(onClick = onReconnect) { Text("Reconnect") }
         }
+        PrivacyPolicyLink()
     }
 }
 

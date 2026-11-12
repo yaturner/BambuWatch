@@ -130,5 +130,6 @@ fun SetupScreen(
             )
             OutlinedButton(onClick = onTryDemo) { Text("Try demo mode") }
         }
+        PrivacyPolicyLink()
     }
 }
