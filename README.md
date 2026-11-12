@@ -165,7 +165,7 @@ Settings (IP, serial, access code) are kept in three places, in this order of pr
 ### Testing watch surfaces without a print (debug builds only)
 
 ```
-adb -s <watch> shell am broadcast -n com.das.bambuwatch/com.das.bambuwatch.wear.DebugStateReceiver \
+adb -s <watch> shell am broadcast -n com.das.printwatcher/com.das.bambuwatch.wear.DebugStateReceiver \
     --es state RUNNING --ei percent 42 --ei remaining 75 [--el error 5] [--ei hms 1] [--ez connected false]
 ```
 The phone's next update (at most 5 min) replaces the fake state.

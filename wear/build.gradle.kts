@@ -21,7 +21,7 @@ android {
     defaultConfig {
         // Must equal the phone app's applicationId (and be signed with the same key)
         // or the Wearable Data Layer won't connect them.
-        applicationId = "com.das.bambuwatch"
+        applicationId = "com.das.printwatcher"
         minSdk = 30 // Wear OS 3 (Galaxy Watch4 and later)
         targetSdk = 36
         versionCode = appVersionCode * 10 + 1

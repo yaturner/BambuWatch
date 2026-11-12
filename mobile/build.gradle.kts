@@ -27,7 +27,7 @@ android {
 
     defaultConfig {
         // Must match the :wear module's applicationId (milestone 4) for the Data Layer to pair them.
-        applicationId = "com.das.bambuwatch"
+        applicationId = "com.das.printwatcher"
         minSdk = 26
         targetSdk = 36
         versionCode = appVersionCode * 10
