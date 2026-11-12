@@ -42,6 +42,7 @@ ON YOUR PHONE
 • Live status: progress, time left, layer, nozzle and bed temperatures, AMS filament colors and
   amounts.
 • Background monitoring with notifications, even when the app is closed.
+• Finds your printer on the network automatically during setup.
 
 PRIVATE BY DESIGN
 • Connects directly to your printer on your local network. No Bambu cloud account, no third-party
