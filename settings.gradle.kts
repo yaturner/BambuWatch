@@ -13,7 +13,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "BambuWatch"
+rootProject.name = "printWatcher"
 include(":shared")
 include(":mobile")
 include(":wear")

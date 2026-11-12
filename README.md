@@ -1,6 +1,6 @@
 # printWatcher for Bambu Lab
 
-**Your Bambu Lab print, on your wrist.** printWatcher (this repo: BambuWatch) is an Android phone app plus a Wear OS
+**Your Bambu Lab print, on your wrist.** printWatcher is an Android phone app plus a Wear OS
 watch app that shows a Bambu Lab printer's progress on a Galaxy Watch (or any Wear OS watch)
 and alerts you when a print finishes or needs attention. Everything stays on your local
 network: no Bambu cloud account, no third-party servers.
@@ -45,7 +45,7 @@ network: no Bambu cloud account, no third-party servers.
 - Background monitoring with notifications, even when the app is closed.
 - Printer settings saved to a plain file on the phone, so they survive reinstalling.
 
-BambuWatch only **reads** printer status. It never sends commands that could affect a print.
+printWatcher only **reads** printer status. It never sends commands that could affect a print.
 Watch controls (pause/resume) may come later as a separate, opt-in feature.
 
 ## Requirements
