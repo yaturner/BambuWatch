@@ -168,3 +168,37 @@ https://github.com/yaturner/printWatcher/issues. The source is on GitHub (MIT li
 *printWatcher is a personal project and isn't affiliated with or endorsed by Bambu Lab.*
 
 Thanks!
+
+## Discord version
+
+About 1,400 characters (Discord's limit is 2,000 without Nitro). The `<…>` around links stops
+Discord adding preview cards. Post in a projects / show-off / self-promo channel (check the rules),
+attach `wear-1-tile-printing.png`, and don't cross-post to several channels at once. Drop the
+"please stay opted in" line's Google note if it reads as too pushy for a server.
+
+```
+**printWatcher: free Wear OS + phone app for Bambu print status** ⌚🖨️
+
+I got tired of opening Bambu Handy every few minutes during long prints, so I built a small app that puts your printer's status on your watch and phone.
+
+**What it does**
+- Watch tile with a progress ring, %, job name, time left and layer
+- Alerts: finished, paused/stopped, errors and HMS, first layer done, lost connection
+- Phone screen with temps and AMS filament colours and amounts
+- Finds your printer on the network automatically
+
+**How it works**
+- LAN only: talks straight to your printer with the access code. No Bambu cloud login, no servers, no ads
+- Read-only, so it never touches your print
+- **Watch is optional**: it runs completely on your phone
+- Demo mode if you want to try it without a printer
+
+Tested on a P1S + Galaxy Watch6; other LAN-mode printers should work and I'd love reports.
+
+**Want to try it early?** It's in Google's closed test before the Play Store release:
+1. Join the group with your Play Store Google account: <https://groups.google.com/g/printwatcher-testers>
+2. Opt in: <https://play.google.com/apps/testing/com.das.printwatcher>
+3. Install from the Play Store link on that page, and please stay opted in for 14 days (that's what Google counts)
+
+Free and open source: <https://github.com/yaturner/printWatcher> · not affiliated with Bambu Lab
+```
