@@ -49,55 +49,51 @@ https://github.com/yaturner/printWatcher
 
 It's open source (MIT) and not affiliated with Bambu Lab.
 
-## r/BambuLab version
+## r/BambuLab version (project share)
 
-Check the subreddit rules for self-promotion limits and use a "Self-Promotion"/"Project" flair if
-there is one. Attach a watch tile screenshot if possible, and reply to comments for the first few
-hours. Drop the "watch app is in Google's review" line once the Wear OS release is approved.
+r/BambuLab removes posts that direct users to items or services for sale or that beg for items or
+services, so this is framed as sharing a free project, with the closed-test invite as an optional
+extra at the end. Use a "Self-Promotion"/"Project" flair if there is one (or ask the mods first),
+attach a watch tile screenshot, and reply to comments for the first few hours. Drop the "watch app
+is in Google's review" line once the Wear OS release is approved.
 
 ### Title
 
-Looking for 12 testers: free Wear OS watch app that shows your Bambu print progress (LAN only, no cloud)
+I made a free, open-source Wear OS app that shows your Bambu print progress on your watch (LAN only, no cloud)
 
 ### Body
 
-I made a small free app, **printWatcher**, that puts your Bambu Lab printer's status on your Wear OS
-watch and phone. Google requires new developers to run a closed test with **12 testers for 14
-days** before an app can go public, so I'm looking for a few people to help.
+I got tired of opening Bambu Handy every few minutes to check on long prints, so I built
+**printWatcher**: a small Android and Wear OS app that puts your printer's status on your wrist and
+phone. It's free, open source (MIT) and has no ads, accounts or tracking.
 
 **What it does**
 
 - Watch tile with a progress ring (yellow printing, green done, red error), percent, job name, time left and layer
 - Watch-face complication and a print-in-progress icon
 - Alerts on watch and phone: print finished, paused or stopped, errors/HMS alerts, first layer done, lost connection
-- Phone screen with temperatures and AMS filament colours and amounts
-- Finds your printer on the network automatically
+- Phone screen with nozzle, bed and chamber temperatures and AMS filament colours and amounts
+- Finds your printer on your network automatically during setup
 
-**Private by design:** it talks to your printer directly over your local network using the LAN
-access code. No Bambu cloud login, no servers, no ads, no analytics. It's **read-only**, so it
-never sends anything that could affect a print.
+**How it works**
 
-Tested on a P1S and a Galaxy Watch6. Other models with LAN mode (X1C, P1P, A1, A1 mini…) should
-work, and I'd really like to hear how they do.
+- Talks to the printer **directly over your local network** with the LAN access code (MQTT over TLS). No Bambu cloud login, and nothing goes to any server.
+- **Read-only**: it never sends anything that could affect a print.
+- **The watch is optional.** It runs completely on your phone, with the full status screen and alerts there; the watch adds the tile and wrist alerts.
+- There's a demo mode with a simulated print if you want to see it without a printer.
 
-**No watch? No problem.** The watch is optional. printWatcher runs completely on your phone, with
-the full status screen and alerts there; the watch just adds the tile and wrist alerts. Printer
-busy? There's a demo mode that runs a simulated print, so you can still help.
+I've tested it on a P1S with a Galaxy Watch6. Other models with LAN mode (X1C, P1P, A1, A1 mini…)
+should work, and I'd love to hear how it does on yours.
 
-**How to join (2 minutes)**
+**Trying it early:** it's on its way to the Play Store, and while it's in Google's closed test
+anyone can try it now by joining
+[the tester group](https://groups.google.com/g/printwatcher-testers) with their Play Store Google
+account and then [opting in here](https://play.google.com/apps/testing/com.das.printwatcher). The
+phone app is available now; the watch app is in Google's review and will arrive automatically.
 
-1. Join the tester group with the Google account you use for the Play Store: https://groups.google.com/g/printwatcher-testers
-2. Opt in: https://play.google.com/apps/testing/com.das.printwatcher
-3. Install printWatcher from the Play Store link on that page.
-4. **Please stay opted in for 14 days.** That's what Google counts. You don't need to use it every day.
+Source, issues and feature ideas: https://github.com/yaturner/printWatcher
 
-The phone app is available now. The watch app is in Google's review and will show up
-automatically for testers when it's approved.
-
-Bug reports and "it does/doesn't work with my X1C" comments are very welcome here or on GitHub:
-https://github.com/yaturner/printWatcher
-
-Open source (MIT). Not affiliated with Bambu Lab.
+Not affiliated with Bambu Lab. Happy to answer questions!
 
 ## Bambu Lab forum version
 
