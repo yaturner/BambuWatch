@@ -31,8 +31,9 @@ No Bambu cloud account, no servers, no ads, no analytics. It's read-only: it nev
 that could affect a print. Tested on a P1S and a Galaxy Watch6; other Bambu models that support
 LAN mode should work and I'd love to hear how they do.
 
-**Don't have a watch, or your printer's busy?** It has a demo mode that runs a simulated print, so
-you can still help.
+**No watch? No problem.** The watch is optional. printWatcher runs completely on your phone, with
+the full status screen and alerts there; the watch just adds the tile and wrist alerts. And if your
+printer's busy, there's a demo mode that runs a simulated print, so you can still help.
 
 **How to join (2 minutes)**
 
@@ -79,8 +80,9 @@ never sends anything that could affect a print.
 Tested on a P1S and a Galaxy Watch6. Other models with LAN mode (X1C, P1P, A1, A1 mini…) should
 work, and I'd really like to hear how they do.
 
-**No watch, or your printer's busy?** There's a demo mode that runs a simulated print, so you can
-still help with just a phone.
+**No watch? No problem.** The watch is optional. printWatcher runs completely on your phone, with
+the full status screen and alerts there; the watch just adds the tile and wrist alerts. Printer
+busy? There's a demo mode that runs a simulated print, so you can still help.
 
 **How to join (2 minutes)**
 
@@ -120,6 +122,9 @@ Handy every few minutes, so I made one.
 Before Google will let a new developer publish, the app has to go through a closed test with **at
 least 12 testers for 14 days**. I'd be very grateful for some help, and especially for reports from
 printers I don't own.
+
+**No watch? No problem.** The watch is optional. printWatcher runs completely on your phone, with
+the full status screen and alerts there; the watch just adds the tile and wrist alerts.
 
 #### What it does
 
