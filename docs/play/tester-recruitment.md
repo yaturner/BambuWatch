@@ -105,7 +105,9 @@ replies. Drop the "watch app is in Google's review" line once the Wear OS releas
 
 ### Title
 
-printWatcher: free Wear OS app for print status on your watch (LAN only, read-only), looking for testers
+printWatcher: free Wear OS app for Bambu print status, testers wanted
+
+(The forum limits titles to 80 characters.)
 
 ### Body
 
